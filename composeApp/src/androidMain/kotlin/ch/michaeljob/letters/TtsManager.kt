@@ -10,7 +10,7 @@ class AndroidTtsManager(context: Context) : TtsManager, TextToSpeech.OnInitListe
 
     override fun onInit(status: Int) {
         if (status == TextToSpeech.SUCCESS) {
-            val result = tts?.setLanguage(Locale.US)
+            val result = tts?.setLanguage(Locale.GERMAN)
             if (result != TextToSpeech.LANG_MISSING_DATA && result != TextToSpeech.LANG_NOT_SUPPORTED) {
                 isReady = true
             }
