@@ -1,4 +1,4 @@
-package ch.michaeljob.letters
+package ch.michaeljob.letters.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -14,8 +14,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Restore
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -34,7 +37,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import ch.michaeljob.letter.ui.AlphabetWheel
 import ch.michaeljob.letter.ui.LetterViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -61,7 +63,7 @@ fun MainScreen(
             CenterAlignedTopAppBar(
                 title = { 
                     Text(
-                        "LETTER",
+                        "Letters",
                         style = MaterialTheme.typography.headlineMedium.copy(
                             fontWeight = FontWeight.Black,
                             letterSpacing = 4.sp
@@ -70,11 +72,15 @@ fun MainScreen(
                 },
                 actions = {
                     IconButton(onClick = { viewModel.reset() }) {
-                        Text("Restart")
+                        Icon(
+                            imageVector = Icons.Outlined.Restore,
+                            contentDescription = "reset picked letters",
+                            tint = MaterialTheme.colorScheme.tertiary,
+                        )
                     }
                 },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = Color.Transparent
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent,
                 )
             )
         },
@@ -116,7 +122,7 @@ fun MainScreen(
                     )
                 } else {
                     Text(
-                        text = if (remainingLetters.isEmpty()) "ALL DONE!" else "SPIN THE WHEEL",
+                        text = if (remainingLetters.isEmpty()) "FIN" else "",
                         style = MaterialTheme.typography.headlineSmall.copy(
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.7f)
@@ -142,7 +148,7 @@ fun HistoryBar(history: List<String>) {
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                "HISTORY",
+                "picked since:",
                 style = MaterialTheme.typography.labelSmall,
                 modifier = Modifier.padding(start = 8.dp, bottom = 4.dp),
                 color = MaterialTheme.colorScheme.secondary

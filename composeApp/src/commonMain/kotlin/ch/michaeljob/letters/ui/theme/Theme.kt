@@ -1,4 +1,4 @@
-package ch.michaeljob.letters.theme
+package ch.michaeljob.letters.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme

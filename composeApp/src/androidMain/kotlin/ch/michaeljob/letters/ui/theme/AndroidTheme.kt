@@ -1,4 +1,4 @@
-package ch.michaeljob.letters.theme
+package ch.michaeljob.letters.ui.theme
 
 import android.app.Activity
 import android.os.Build

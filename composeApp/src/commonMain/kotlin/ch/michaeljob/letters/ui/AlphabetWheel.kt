@@ -1,4 +1,4 @@
-package ch.michaeljob.letter.ui
+package ch.michaeljob.letters.ui
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearOutSlowInEasing
@@ -17,7 +17,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -29,6 +29,7 @@ import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
+import kotlin.math.PI
 
 @Composable
 fun AlphabetWheel(
@@ -90,7 +91,7 @@ fun AlphabetWheel(
             rotate(rotation.value, pivot = center) {
                 allLetters.forEachIndexed { index, letter ->
                     val angle = index * anglePerLetter
-                    val angleRad = (angle - 90.0) * (kotlin.math.PI / 180.0)
+                    val angleRad = (angle - 90.0) * (PI / 180.0)
                     
                     val x = center.x + (radius * 0.8f) * cos(angleRad).toFloat()
                     val y = center.y + (radius * 0.8f) * sin(angleRad).toFloat()
@@ -102,7 +103,7 @@ fun AlphabetWheel(
                                 color = if (remainingLetters.contains(letter)) {
                                     colorScheme.onSecondaryContainer
                                 } else {
-                                    colorScheme.outlineVariant
+                                    colorScheme.onPrimary
                                 },
                                 fontSize = 24.sp,
                                 fontWeight = FontWeight.Bold,
@@ -120,21 +121,21 @@ fun AlphabetWheel(
                     }
                 }
             }
-            
-            drawCircle(
+
+            drawPath(
                 color = colorScheme.primary,
-                radius = 10.dp.toPx(),
-                center = Offset(center.x, center.y - radius)
+                path = Path().apply {
+                    moveTo(center.x, center.y - radius + 30)
+                    lineTo(center.x - 20, center.y - radius)
+                    lineTo(center.x + 20 , center.y - radius)
+                }
             )
         }
         
         if (!isSpinning) {
             Text(
-                text = if (remainingLetters.isEmpty()) "DONE" else "TAP",
-                style = MaterialTheme.typography.headlineMedium.copy(
-                    fontWeight = FontWeight.ExtraBold,
-                    color = colorScheme.primary
-                )
+                text = if (remainingLetters.isEmpty()) "" else "tap to spin",
+                style = MaterialTheme.typography.labelMedium
             )
         }
     }
