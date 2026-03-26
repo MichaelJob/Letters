@@ -37,7 +37,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import ch.michaeljob.letter.ui.LetterViewModel
+import ch.michaeljob.letters.LetterViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -97,9 +97,7 @@ fun MainScreen(
         ) {
             AlphabetWheel(
                 remainingLetters = remainingLetters,
-                onLetterSelected = { letter ->
-                    viewModel.pickRandomLetter()
-                },
+                onLetterSelected = { viewModel.pickRandomLetter() },
                 isSpinning = isSpinning,
                 setSpinning = { viewModel.setSpinning(it) }
             )

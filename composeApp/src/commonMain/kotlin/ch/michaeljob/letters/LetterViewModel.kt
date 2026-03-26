@@ -1,4 +1,4 @@
-package ch.michaeljob.letter.ui
+package ch.michaeljob.letters
 
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

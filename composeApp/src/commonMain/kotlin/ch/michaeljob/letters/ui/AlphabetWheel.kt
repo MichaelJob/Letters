@@ -34,7 +34,7 @@ import kotlin.math.PI
 @Composable
 fun AlphabetWheel(
     remainingLetters: List<String>,
-    onLetterSelected: (String) -> Unit,
+    onLetterSelected: () -> Unit,
     isSpinning: Boolean,
     setSpinning: (Boolean) -> Unit,
     modifier: Modifier = Modifier
@@ -72,7 +72,7 @@ fun AlphabetWheel(
                             )
                         )
                         setSpinning(false)
-                        onLetterSelected(targetLetter)
+                        onLetterSelected()
                     }
                 }
             },
