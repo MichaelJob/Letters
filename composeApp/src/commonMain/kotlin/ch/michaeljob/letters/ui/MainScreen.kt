@@ -124,7 +124,7 @@ fun MainScreen(
                         }
                     }
                 )
-                Spacer(modifier = Modifier.height(96.dp))
+                Spacer(modifier = Modifier.weight(0.2f))
                 AlphabetWheel(
                     allLetters = if (viewModel.isNumbers) viewModel.allNumbers.value else viewModel.allLetters.value,
                     remainingLetters = remainingLetters,
@@ -133,7 +133,13 @@ fun MainScreen(
                     setSpinning = { viewModel.setSpinning(it) }
                 )
 
-                Spacer(modifier = Modifier.height(48.dp))
+                Text(
+                    text = if (!isWheelSpinning) "tap to spin" else "",
+                    style = MaterialTheme.typography.labelMedium,
+                    modifier = Modifier.padding(10.dp)
+                )
+
+                Spacer(modifier = Modifier.weight(0.2f))
 
                 Box(
                     modifier = Modifier.height(140.dp),
