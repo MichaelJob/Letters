@@ -15,6 +15,8 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Abc
+import androidx.compose.material.icons.filled.Numbers
 import androidx.compose.material.icons.outlined.Restore
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -25,12 +27,11 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -47,98 +48,119 @@ fun MainScreen(
     viewModel: LetterViewModel = viewModel { LetterViewModel() },
     onLetterSelected: (String) -> Unit = {}
 ) {
-    with(viewModel){
-    val history by viewModel.history.collectAsState()
-    val isSpinning by viewModel.isSpinning.collectAsState()
-    val currentLetter by viewModel.currentLetter.collectAsState()
-    
-    // Announce letter when it's selected (and spinning stops)
-    LaunchedEffect(currentLetter, isSpinning) {
-        val letter = currentLetter
-        if (letter != null && !isSpinning) {
-            onLetterSelected(letter)
-        }
-    }
+    with(viewModel) {
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = { 
-                    Text(
-                        "Letters",
-                        style = MaterialTheme.typography.headlineMedium.copy(
-                            fontWeight = FontWeight.Black,
-                            letterSpacing = 4.sp
-                        )
-                    ) 
-                },
-                actions = {
-                    IconButton(onClick = { viewModel.reset() }) {
-                        Icon(
-                            imageVector = Icons.Outlined.Restore,
-                            contentDescription = "reset picked letters",
-                            tint = MaterialTheme.colorScheme.tertiary,
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent,
-                )
-            )
-        },
-        bottomBar = {
-            NavigationBar {
-                HistoryBar(history = history)
+        // Announce letter when it's selected (and spinning stops)
+        LaunchedEffect(currentLetter, isWheelSpinning) {
+            if (currentLetter != "" && !isWheelSpinning) {
+                onLetterSelected(currentLetter)
             }
         }
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Switch(
-                checked = viewModel.isNumbers,
-                onCheckedChange = { viewModel.setIsNumbers(it) }
-            )
-            AlphabetWheel(
-                allLetters = if (viewModel.isNumbers) viewModel.allNumbers else viewModel.allLetters,
-                remainingLetters = remainingLetters,
-                onLetterSelected = { viewModel.pickRandomLetter() },
-                isSpinning = isSpinning,
-                setSpinning = { viewModel.setSpinning(it) }
-            )
-            
-            Spacer(modifier = Modifier.height(48.dp))
-            
-            Box(
-                modifier = Modifier.height(140.dp),
-                contentAlignment = Alignment.Center
+
+        Scaffold(
+            topBar = {
+                CenterAlignedTopAppBar(
+                    title = {
+                        Text(
+                            if (viewModel.isNumbers) "Numbers" else "Letters",
+                            style = MaterialTheme.typography.headlineMedium.copy(
+                                fontWeight = FontWeight.Black,
+                                letterSpacing = 4.sp
+                            )
+                        )
+                    },
+                    actions = {
+                        IconButton(onClick = { viewModel.reset() }) {
+                            Icon(
+                                imageVector = Icons.Outlined.Restore,
+                                contentDescription = "reset picked letters",
+                                tint = MaterialTheme.colorScheme.tertiary,
+                            )
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Transparent,
+                    )
+                )
+            },
+            bottomBar = {
+                NavigationBar {
+                    HistoryBar(history = history)
+                }
+            }
+        ) { innerPadding ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
-                val letter = currentLetter
-                if (letter != null && !isSpinning) {
-                    Text(
-                        text = letter,
-                        style = MaterialTheme.typography.displayLarge.copy(
-                            fontWeight = FontWeight.ExtraBold,
-                            fontSize = 120.sp,
-                            color = MaterialTheme.colorScheme.primary
+                Switch(
+                    checked = viewModel.isNumbers,
+                    enabled = viewModel.history.isEmpty(),
+                    colors = SwitchDefaults.colors(
+                        checkedBorderColor = MaterialTheme.colorScheme.primary,
+                        uncheckedBorderColor = MaterialTheme.colorScheme.primary,
+                        uncheckedThumbColor = MaterialTheme.colorScheme.primary,
+                        uncheckedTrackColor = MaterialTheme.colorScheme.primaryContainer,
+                        checkedThumbColor = MaterialTheme.colorScheme.primary,
+                        checkedTrackColor = MaterialTheme.colorScheme.primaryContainer,
+                    ),
+                    onCheckedChange = { viewModel.setIsNumbers(it) },
+                    thumbContent = if (viewModel.isNumbers) {
+                        {
+                            Icon(
+                                imageVector = Icons.Filled.Numbers,
+                                contentDescription = "Numbers",
+                            )
+                        }
+                    } else {
+                        {
+                            Icon(
+                                imageVector = Icons.Filled.Abc,
+                                contentDescription = "Letters",
+                            )
+                        }
+                    }
+                )
+                Spacer(modifier = Modifier.height(96.dp))
+                AlphabetWheel(
+                    allLetters = if (viewModel.isNumbers) viewModel.allNumbers.value else viewModel.allLetters.value,
+                    remainingLetters = remainingLetters,
+                    onLetterSelected = { viewModel.pickRandomLetter(it) },
+                    isSpinning = isWheelSpinning,
+                    setSpinning = { viewModel.setSpinning(it) }
+                )
+
+                Spacer(modifier = Modifier.height(48.dp))
+
+                Box(
+                    modifier = Modifier.height(140.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    val letter = currentLetter
+                    if (letter != "" && !isWheelSpinning) {
+                        Text(
+                            text = letter,
+                            style = MaterialTheme.typography.displayLarge.copy(
+                                fontWeight = FontWeight.ExtraBold,
+                                fontSize = 120.sp,
+                                color = MaterialTheme.colorScheme.primary
+                            )
                         )
-                    )
-                } else {
-                    Text(
-                        text = if (remainingLetters.isEmpty()) "FIN" else "",
-                        style = MaterialTheme.typography.headlineSmall.copy(
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.7f)
+                    } else {
+                        Text(
+                            text = if (remainingLetters.isEmpty()) "FIN" else "",
+                            style = MaterialTheme.typography.headlineSmall.copy(
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.7f)
+                            )
                         )
-                    )
+                    }
                 }
             }
         }
-    }
     }
 }
 

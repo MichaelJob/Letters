@@ -35,14 +35,14 @@ import kotlin.math.PI
 fun AlphabetWheel(
     allLetters: List<String> = ('A'..'Z').map { it.toString() },
     remainingLetters: List<String>,
-    onLetterSelected: () -> Unit,
+    onLetterSelected: (String) -> Unit,
     isSpinning: Boolean,
     setSpinning: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val rotation = remember { Animatable(0f) }
     val scope = rememberCoroutineScope()
-    val colorScheme = MaterialTheme.colorScheme
+    val colorScheme = MaterialTheme.colorScheme //since in canvas not callable
     val textMeasurer = rememberTextMeasurer()
     val anglePerLetter = 360f / allLetters.size
 
@@ -71,7 +71,7 @@ fun AlphabetWheel(
                             )
                         )
                         setSpinning(false)
-                        onLetterSelected()
+                        onLetterSelected(targetLetter)
                     }
                 }
             },
@@ -133,7 +133,7 @@ fun AlphabetWheel(
         
         if (!isSpinning) {
             Text(
-                text = if (remainingLetters.isEmpty()) "" else "tap to spin",
+                text = if (remainingLetters.isEmpty()) "FIN" else "tap to spin",
                 style = MaterialTheme.typography.labelMedium
             )
         }
