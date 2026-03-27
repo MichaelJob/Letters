@@ -24,6 +24,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -46,7 +47,7 @@ fun MainScreen(
     viewModel: LetterViewModel = viewModel { LetterViewModel() },
     onLetterSelected: (String) -> Unit = {}
 ) {
-    val remainingLetters by viewModel.remainingLetters.collectAsState()
+    with(viewModel){
     val history by viewModel.history.collectAsState()
     val isSpinning by viewModel.isSpinning.collectAsState()
     val currentLetter by viewModel.currentLetter.collectAsState()
@@ -98,7 +99,12 @@ fun MainScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            Switch(
+                checked = viewModel.isNumbers,
+                onCheckedChange = { viewModel.setIsNumbers(it) }
+            )
             AlphabetWheel(
+                allLetters = if (viewModel.isNumbers) viewModel.allNumbers else viewModel.allLetters,
                 remainingLetters = remainingLetters,
                 onLetterSelected = { viewModel.pickRandomLetter() },
                 isSpinning = isSpinning,
@@ -132,6 +138,7 @@ fun MainScreen(
                 }
             }
         }
+    }
     }
 }
 

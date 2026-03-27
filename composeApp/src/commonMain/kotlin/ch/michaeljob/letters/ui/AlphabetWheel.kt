@@ -33,6 +33,7 @@ import kotlin.math.PI
 
 @Composable
 fun AlphabetWheel(
+    allLetters: List<String> = ('A'..'Z').map { it.toString() },
     remainingLetters: List<String>,
     onLetterSelected: () -> Unit,
     isSpinning: Boolean,
@@ -43,8 +44,6 @@ fun AlphabetWheel(
     val scope = rememberCoroutineScope()
     val colorScheme = MaterialTheme.colorScheme
     val textMeasurer = rememberTextMeasurer()
-    
-    val allLetters = remember { ('A'..'Z').map { it.toString() } }
     val anglePerLetter = 360f / allLetters.size
 
     Box(
