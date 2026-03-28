@@ -1,0 +1,55 @@
+package ch.michaeljob.letters
+
+import letters.composeapp.generated.resources.Res
+import letters.composeapp.generated.resources.dice124
+import letters.composeapp.generated.resources.dice132
+import letters.composeapp.generated.resources.dice145
+import letters.composeapp.generated.resources.dice153
+import letters.composeapp.generated.resources.dice213
+import letters.composeapp.generated.resources.dice236
+import letters.composeapp.generated.resources.dice241
+import letters.composeapp.generated.resources.dice264
+import letters.composeapp.generated.resources.dice315
+import letters.composeapp.generated.resources.dice321
+import letters.composeapp.generated.resources.dice356
+import letters.composeapp.generated.resources.dice362
+import letters.composeapp.generated.resources.dice412
+import letters.composeapp.generated.resources.dice426
+import letters.composeapp.generated.resources.dice451
+import letters.composeapp.generated.resources.dice465
+import letters.composeapp.generated.resources.dice514
+import letters.composeapp.generated.resources.dice531
+import letters.composeapp.generated.resources.dice546
+import letters.composeapp.generated.resources.dice563
+import letters.composeapp.generated.resources.dice623
+import letters.composeapp.generated.resources.dice635
+import letters.composeapp.generated.resources.dice642
+import letters.composeapp.generated.resources.dice654
+import org.jetbrains.compose.resources.DrawableResource
+
+enum class Dice(val value: Int, val drawable: DrawableResource) {
+    ONE24(1, Res.drawable.dice124),
+    ONE32(1, Res.drawable.dice132),
+    ONE45(1, Res.drawable.dice145),
+    ONE53(1, Res.drawable.dice153),
+    TWO13(2, Res.drawable.dice213),
+    TWO36(2, Res.drawable.dice236),
+    TWO41(2, Res.drawable.dice241),
+    TWO64(2, Res.drawable.dice264),
+    THREE15(3, Res.drawable.dice315),
+    THREE21(3, Res.drawable.dice321),
+    THREE56(3, Res.drawable.dice356),
+    THREE62(3, Res.drawable.dice362),
+    FOUR12(4, Res.drawable.dice412),
+    FOUR51(4, Res.drawable.dice451),
+    FOUR26(4, Res.drawable.dice426),
+    FOUR65(4, Res.drawable.dice465),
+    FIVE46(5, Res.drawable.dice546),
+    FIVE63(5, Res.drawable.dice563),
+    FIVE31(5, Res.drawable.dice531),
+    FIVE15(5, Res.drawable.dice514),
+    SIX54(6, Res.drawable.dice654),
+    SIX42(6, Res.drawable.dice642),
+    SIX35(6, Res.drawable.dice635),
+    SIX23(6, Res.drawable.dice623),
+}

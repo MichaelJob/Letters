@@ -2,6 +2,7 @@ package ch.michaeljob.letters
 
 import android.content.Context
 import android.speech.tts.TextToSpeech
+import org.koin.java.KoinJavaComponent.getKoin
 import java.util.Locale
 
 class AndroidTtsManager(context: Context) : TtsManager, TextToSpeech.OnInitListener {
@@ -29,9 +30,7 @@ class AndroidTtsManager(context: Context) : TtsManager, TextToSpeech.OnInitListe
     }
 }
 
-// This is a bit tricky since we need Context. 
-// In a real app, we'd use a DI or a CompositionLocal.
-// For now, we'll provide a placeholder or use a global context if available.
+
 actual fun createTtsManager(): TtsManager {
-    throw RuntimeException("AndroidTtsManager needs a context. Use the direct constructor in Android code.")
+    return AndroidTtsManager(context=getKoin().get())
 }

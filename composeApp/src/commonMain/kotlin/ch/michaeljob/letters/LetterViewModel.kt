@@ -1,47 +1,68 @@
 package ch.michaeljob.letters
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class LetterViewModel : ViewModel() {
 
-    private val allLetters = ('A'..'Z').map { it.toString() }
+    var allLetters = mutableStateOf(('A'..'Z').map { it.toString() })
+    var allNumbers = mutableStateOf(('1'..'9').map { it.toString() })
+    var remainingLetters = mutableStateListOf<String>()
+    var history = mutableStateListOf<String>()
+    var currentLetter by mutableStateOf("")
+    var isWheelSpinning by mutableStateOf(false)
+    var isNumbers by mutableStateOf(false)
+    var isDice by mutableStateOf(true)
 
-    private val _remainingLetters = MutableStateFlow(allLetters.shuffled())
-    val remainingLetters: StateFlow<List<String>> = _remainingLetters.asStateFlow()
+    var currentDice by mutableStateOf(Dice.entries.random())
 
-    private val _history = MutableStateFlow<List<String>>(emptyList())
-    val history: StateFlow<List<String>> = _history.asStateFlow()
 
-    private val _currentLetter = MutableStateFlow<String?>(null)
-    val currentLetter: StateFlow<String?> = _currentLetter.asStateFlow()
+    init {
+        reset()
+    }
+    fun pickRandomLetter(letter: String) {
+        if (isWheelSpinning) return
 
-    private val _isSpinning = MutableStateFlow(false)
-    val isSpinning: StateFlow<Boolean> = _isSpinning.asStateFlow()
+        if (remainingLetters.isNotEmpty()) {
+            currentLetter = letter
+            remainingLetters.remove(letter)
+            history.add(letter)
+        }
+    }
 
-    fun pickRandomLetter() {
-        if (_isSpinning.value) return
-        
-        val remaining = _remainingLetters.value
-        if (remaining.isNotEmpty()) {
-            val nextLetter = remaining.first()
-            _currentLetter.value = nextLetter
-            _remainingLetters.update { it.drop(1) }
-            _history.update { it + nextLetter }
+    fun onDiceSelected(dice: Dice){
+        currentDice = dice
+        currentLetter = dice.value.toString()
+        viewModelScope.launch {
+            delay(3000)
+            history.add(dice.value.toString())
         }
     }
 
     fun reset() {
-        _remainingLetters.value = allLetters.shuffled()
-        _history.value = emptyList()
-        _currentLetter.value = null
-        _isSpinning.value = false
+        remainingLetters = if (isNumbers) {
+            allNumbers.value.shuffled().toMutableStateList()
+        } else {
+            allLetters.value.shuffled().toMutableStateList()
+        }
+        history.clear()
+        currentLetter = ""
+        isWheelSpinning = false
     }
-    
+
     fun setSpinning(spinning: Boolean) {
-        _isSpinning.value = spinning
+        isWheelSpinning = spinning
+    }
+
+    fun setIsNumbers(bool: Boolean) {
+        isNumbers = bool
+        reset()
     }
 }

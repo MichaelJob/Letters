@@ -8,16 +8,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.GlobalContext.startKoin
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
-        setContent {
-            val context = LocalContext.current
-            val ttsManager = remember { AndroidTtsManager(context) }
+        startKoin {
+            androidContext(applicationContext)
+        }
 
+        setContent {
+            val ttsManager = remember { createTtsManager() }
             App(ttsManager)
         }
     }
