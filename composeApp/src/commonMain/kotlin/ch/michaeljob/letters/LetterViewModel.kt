@@ -6,6 +6,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class LetterViewModel : ViewModel() {
 
@@ -16,6 +19,9 @@ class LetterViewModel : ViewModel() {
     var currentLetter by mutableStateOf("")
     var isWheelSpinning by mutableStateOf(false)
     var isNumbers by mutableStateOf(false)
+    var isDice by mutableStateOf(true)
+
+    var currentDice by mutableStateOf(Dice.entries.random())
 
 
     init {
@@ -28,6 +34,15 @@ class LetterViewModel : ViewModel() {
             currentLetter = letter
             remainingLetters.remove(letter)
             history.add(letter)
+        }
+    }
+
+    fun onDiceSelected(dice: Dice){
+        currentDice = dice
+        currentLetter = dice.value.toString()
+        viewModelScope.launch {
+            delay(3000)
+            history.add(dice.value.toString())
         }
     }
 

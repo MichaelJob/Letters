@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,6 +20,7 @@ import androidx.compose.material.icons.filled.Abc
 import androidx.compose.material.icons.filled.Numbers
 import androidx.compose.material.icons.outlined.Restore
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -33,6 +35,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
+
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -124,14 +127,35 @@ fun MainScreen(
                         }
                     }
                 )
-                Spacer(modifier = Modifier.weight(0.2f))
-                AlphabetWheel(
-                    allLetters = if (viewModel.isNumbers) viewModel.allNumbers.value else viewModel.allLetters.value,
-                    remainingLetters = remainingLetters,
-                    onLetterSelected = { viewModel.pickRandomLetter(it) },
-                    isSpinning = isWheelSpinning,
-                    setSpinning = { viewModel.setSpinning(it) }
-                )
+                Spacer(modifier = Modifier.weight(0.1f))
+
+                if (isNumbers){
+                    Row (verticalAlignment = Alignment.CenterVertically){
+                        Text("Dice")
+                        Checkbox(
+                            checked = isDice,
+                            onCheckedChange = { isDice = it },
+                            enabled = viewModel.history.isEmpty(),
+                        )
+                    }
+                 }
+                Spacer(modifier = Modifier.weight(0.1f))
+                if (isDice && isNumbers){
+                    Dice(
+                        onDiceSelected = { viewModel.onDiceSelected(it) },
+                        isSpinning = isWheelSpinning,
+                        setSpinning = { viewModel.setSpinning(it) },
+                        currentDice = currentDice,
+                    )
+                } else {
+                    AlphabetWheel(
+                        allLetters = if (viewModel.isNumbers) viewModel.allNumbers.value else viewModel.allLetters.value,
+                        remainingLetters = remainingLetters,
+                        onLetterSelected = { viewModel.pickRandomLetter(it) },
+                        isSpinning = isWheelSpinning,
+                        setSpinning = { viewModel.setSpinning(it) }
+                    )
+                }
 
                 Text(
                     text = if (!isWheelSpinning) "tap to spin" else "",
