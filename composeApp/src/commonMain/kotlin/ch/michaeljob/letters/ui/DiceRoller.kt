@@ -7,6 +7,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
@@ -14,6 +15,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import ch.michaeljob.letters.Dice
@@ -24,7 +28,7 @@ import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalUuidApi::class)
 @Composable
-fun Dice(
+fun DiceRoller(
     onDiceSelected: (Dice) -> Unit,
     isSpinning: Boolean,
     setSpinning: (Boolean) -> Unit,
@@ -69,14 +73,19 @@ fun Dice(
 
 @Composable
 fun Cube(rotation: Animatable<Float, AnimationVector1D>, currentDice: Dice) {
+    val dark = isSystemInDarkTheme()
+
     Box(modifier = Modifier.graphicsLayer { rotationZ = rotation.value }) {
         Image(
             painterResource(currentDice.drawable),
             contentDescription = currentDice.value.toString(),
+          colorFilter = if (dark) {
+              ColorFilter.tint(Color.White.copy(0.15F), BlendMode.SrcAtop)
+          } else {
+              null
+          }
         )
-
     }
 }
-
 
 

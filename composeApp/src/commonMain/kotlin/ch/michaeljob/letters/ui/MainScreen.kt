@@ -141,7 +141,7 @@ fun MainScreen(
                  }
                 Spacer(modifier = Modifier.weight(0.1f))
                 if (isDice && isNumbers){
-                    Dice(
+                    DiceRoller(
                         onDiceSelected = { viewModel.onDiceSelected(it) },
                         isSpinning = isWheelSpinning,
                         setSpinning = { viewModel.setSpinning(it) },
