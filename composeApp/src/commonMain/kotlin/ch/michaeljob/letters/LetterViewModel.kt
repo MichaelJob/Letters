@@ -8,7 +8,6 @@ import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 
 class LetterViewModel : ViewModel() {
-
     var allLetters = mutableStateOf(('A'..'Z').map { it.toString() })
     var allNumbers = mutableStateOf(('1'..'9').map { it.toString() })
     var remainingLetters = mutableStateListOf<String>()
@@ -20,6 +19,8 @@ class LetterViewModel : ViewModel() {
     var isNumbers by mutableStateOf(false)
     var isDice by mutableStateOf(true)
 
+    var isSpinning by mutableStateOf(false)
+
     var currentDice by mutableStateOf(Dice.entries.random())
 
     val ttsManager = createTtsManager()
@@ -28,17 +29,9 @@ class LetterViewModel : ViewModel() {
         reset()
     }
 
-    fun pickRandomLetter(letter: String) {
-        if (remainingLetters.isNotEmpty()) {
-            updateCurrentLetter(letter)
-            remainingLetters.remove(letter)
-            history.add(letter)
-        }
-    }
-
-    fun onDiceSelected(){
-        updateCurrentLetter(currentDice.value.toString())
-        history.add(currentDice.value.toString())
+    fun setIsNumbers(bool: Boolean) {
+        isNumbers = bool
+        reset()
     }
 
     fun reset() {
@@ -49,21 +42,35 @@ class LetterViewModel : ViewModel() {
         }
         history.clear()
         currentLetter = ""
+        isSpinning = false
     }
 
-    private fun updateCurrentLetter(letter: String){
-        currentLetter = letter
-        if (currentLetter != "") {
-            ttsManager.speak(currentLetter)
-        }
+
+    //before animation
+    fun spinTheWheel() {
+        isSpinning = true
+        currentLetter = remainingLetters.first()
     }
 
-    fun setIsNumbers(bool: Boolean) {
-        isNumbers = bool
-        reset()
+    //after animation
+    fun updateCurrentLetter() {
+        remainingLetters.remove(currentLetter)
+        history.add(currentLetter)
+        ttsManager.speak(currentLetter)
+        isSpinning = false
     }
 
+
+    //before animation
     fun rollTheDice() {
+        isSpinning = true
         currentDice = Dice.entries.random()
+    }
+
+    //after animation
+    fun onDiceSelected() {
+        currentLetter = currentDice.value.toString()
+        history.add(currentDice.value.toString())
+        isSpinning = false
     }
 }

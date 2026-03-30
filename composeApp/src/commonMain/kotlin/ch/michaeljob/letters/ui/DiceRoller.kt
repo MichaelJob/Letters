@@ -29,10 +29,11 @@ import kotlin.uuid.ExperimentalUuidApi
 @OptIn(ExperimentalUuidApi::class)
 @Composable
 fun DiceRoller(
-        currentDice : () -> Dice,
-        onAnimationStart: () -> Unit,
-        onAnimationEnd: () -> Unit,
-        modifier: Modifier = Modifier,
+    currentDice: () -> Dice,
+    onAnimationStart: () -> Unit = {},
+    onAnimationEnd: () -> Unit = {},
+    modifier: Modifier = Modifier,
+    isSpinning: Boolean,
 ) {
     val rotation = remember { Animatable(0f) }
     val scope = rememberCoroutineScope()
@@ -42,23 +43,24 @@ fun DiceRoller(
             .size(300.dp)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
-                indication = null
+                indication = null,
+                enabled = !isSpinning
             ) {
-                    val currentRotation = rotation.value
-                    val extraSpins = Random(42).nextInt(2, 8)
-                    val targetAngle = extraSpins * 360f
+                val currentRotation = rotation.value
+                val extraSpins = Random(42).nextInt(2, 8)
+                val targetAngle = extraSpins * 360f
 
-                    scope.launch {
-                        onAnimationStart()
-                        rotation.animateTo(
-                            targetValue = currentRotation + targetAngle,
-                            animationSpec = tween(
-                                durationMillis = 3000,
-                                easing = LinearOutSlowInEasing
-                            )
+                scope.launch {
+                    onAnimationStart()
+                    rotation.animateTo(
+                        targetValue = currentRotation + targetAngle,
+                        animationSpec = tween(
+                            durationMillis = 3000,
+                            easing = LinearOutSlowInEasing
                         )
-                        onAnimationEnd()
-                    }
+                    )
+                    onAnimationEnd()
+                }
             },
         contentAlignment = Alignment.Center
     ) {
@@ -74,11 +76,11 @@ fun Cube(rotation: Animatable<Float, AnimationVector1D>, currentDice: Dice) {
         Image(
             painterResource(currentDice.drawable),
             contentDescription = currentDice.value.toString(),
-          colorFilter = if (dark) {
-              ColorFilter.tint(Color.White.copy(0.15F), BlendMode.SrcAtop)
-          } else {
-              null
-          }
+            colorFilter = if (dark) {
+                ColorFilter.tint(Color.White.copy(0.15F), BlendMode.SrcAtop)
+            } else {
+                null
+            }
         )
     }
 }

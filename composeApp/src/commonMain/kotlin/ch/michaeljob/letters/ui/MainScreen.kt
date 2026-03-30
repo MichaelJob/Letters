@@ -34,7 +34,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
-
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -116,8 +115,8 @@ fun MainScreen(viewModel: LetterViewModel) {
                 )
                 Spacer(modifier = Modifier.weight(0.1f))
 
-                if (isNumbers){
-                    Row (verticalAlignment = Alignment.CenterVertically){
+                if (isNumbers) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         Text("Dice")
                         Checkbox(
                             checked = isDice,
@@ -125,24 +124,28 @@ fun MainScreen(viewModel: LetterViewModel) {
                             enabled = viewModel.history.isEmpty(),
                         )
                     }
-                 }
+                }
                 Spacer(modifier = Modifier.weight(0.1f))
-                if (isDice && isNumbers){
-                   DiceRoller(
-                           currentDice = { viewModel.currentDice },
-                           onAnimationStart = { viewModel.rollTheDice() },
-                           onAnimationEnd = { viewModel.onDiceSelected()},
+                if (isDice && isNumbers) {
+                    DiceRoller(
+                        currentDice = { viewModel.currentDice },
+                        onAnimationStart = { viewModel.rollTheDice() },
+                        onAnimationEnd = { viewModel.onDiceSelected() },
+                        isSpinning = isSpinning,
                     )
                 } else {
                     AlphabetWheel(
                         allLetters = if (viewModel.isNumbers) viewModel.allNumbers.value else viewModel.allLetters.value,
                         remainingLetters = remainingLetters,
-                        onLetterSelected = { viewModel.pickRandomLetter(it) }
+                        isSpinning = isSpinning,
+                        onAnimationStart = { viewModel.spinTheWheel() },
+                        onAnimationEnd = { viewModel.updateCurrentLetter() },
+                        currentLetter = { viewModel.currentLetter }
                     )
                 }
 
                 Text(
-                    text = if (true) "tap to spin" else "",
+                    text = if (isSpinning) "" else "tap to spin",
                     style = MaterialTheme.typography.labelMedium,
                     modifier = Modifier.padding(10.dp)
                 )
@@ -154,7 +157,7 @@ fun MainScreen(viewModel: LetterViewModel) {
                     contentAlignment = Alignment.Center
                 ) {
                     val letter = currentLetter
-                    if (letter != "") {
+                    if (letter != "" && !isSpinning) {
                         Text(
                             text = letter,
                             style = MaterialTheme.typography.displayLarge.copy(
