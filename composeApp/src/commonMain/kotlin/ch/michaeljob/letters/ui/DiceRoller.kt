@@ -29,11 +29,10 @@ import kotlin.uuid.ExperimentalUuidApi
 @OptIn(ExperimentalUuidApi::class)
 @Composable
 fun DiceRoller(
-    onDiceSelected: (Dice) -> Unit,
-    isSpinning: Boolean,
-    setSpinning: (Boolean) -> Unit,
-    modifier: Modifier = Modifier,
-    currentDice: Dice,
+        currentDice : () -> Dice,
+        onAnimationStart: () -> Unit,
+        onAnimationEnd: () -> Unit,
+        modifier: Modifier = Modifier,
 ) {
     val rotation = remember { Animatable(0f) }
     val scope = rememberCoroutineScope()
@@ -45,15 +44,12 @@ fun DiceRoller(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null
             ) {
-                if (!isSpinning) {
-                    setSpinning(true)
-                    val nextDice = Dice.entries.random()
                     val currentRotation = rotation.value
                     val extraSpins = Random(42).nextInt(2, 8)
                     val targetAngle = extraSpins * 360f
 
                     scope.launch {
-                        onDiceSelected(nextDice)
+                        onAnimationStart()
                         rotation.animateTo(
                             targetValue = currentRotation + targetAngle,
                             animationSpec = tween(
@@ -61,13 +57,12 @@ fun DiceRoller(
                                 easing = LinearOutSlowInEasing
                             )
                         )
-                        setSpinning(false)
+                        onAnimationEnd()
                     }
-                }
             },
         contentAlignment = Alignment.Center
     ) {
-        Cube(rotation, currentDice)
+        Cube(rotation, currentDice())
     }
 }
 

@@ -36,8 +36,6 @@ fun AlphabetWheel(
     allLetters: List<String> = ('A'..'Z').map { it.toString() },
     remainingLetters: List<String>,
     onLetterSelected: (String) -> Unit,
-    isSpinning: Boolean,
-    setSpinning: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val rotation = remember { Animatable(0f) }
@@ -53,8 +51,7 @@ fun AlphabetWheel(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null
             ) {
-                if (!isSpinning && remainingLetters.isNotEmpty()) {
-                    setSpinning(true)
+                if (remainingLetters.isNotEmpty()) {
                     val targetLetter = remainingLetters.first()
                     val targetIndex = allLetters.indexOf(targetLetter)
                     
@@ -70,7 +67,6 @@ fun AlphabetWheel(
                                 easing = LinearOutSlowInEasing
                             )
                         )
-                        setSpinning(false)
                         onLetterSelected(targetLetter)
                     }
                 }

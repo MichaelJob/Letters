@@ -6,9 +6,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 class LetterViewModel : ViewModel() {
 
@@ -16,34 +13,32 @@ class LetterViewModel : ViewModel() {
     var allNumbers = mutableStateOf(('1'..'9').map { it.toString() })
     var remainingLetters = mutableStateListOf<String>()
     var history = mutableStateListOf<String>()
+
     var currentLetter by mutableStateOf("")
-    var isWheelSpinning by mutableStateOf(false)
+        private set
+
     var isNumbers by mutableStateOf(false)
     var isDice by mutableStateOf(true)
 
     var currentDice by mutableStateOf(Dice.entries.random())
 
+    val ttsManager = createTtsManager()
 
     init {
         reset()
     }
-    fun pickRandomLetter(letter: String) {
-        if (isWheelSpinning) return
 
+    fun pickRandomLetter(letter: String) {
         if (remainingLetters.isNotEmpty()) {
-            currentLetter = letter
+            updateCurrentLetter(letter)
             remainingLetters.remove(letter)
             history.add(letter)
         }
     }
 
-    fun onDiceSelected(dice: Dice){
-        currentDice = dice
-        currentLetter = dice.value.toString()
-        viewModelScope.launch {
-            delay(3000)
-            history.add(dice.value.toString())
-        }
+    fun onDiceSelected(){
+        updateCurrentLetter(currentDice.value.toString())
+        history.add(currentDice.value.toString())
     }
 
     fun reset() {
@@ -54,15 +49,21 @@ class LetterViewModel : ViewModel() {
         }
         history.clear()
         currentLetter = ""
-        isWheelSpinning = false
     }
 
-    fun setSpinning(spinning: Boolean) {
-        isWheelSpinning = spinning
+    private fun updateCurrentLetter(letter: String){
+        currentLetter = letter
+        if (currentLetter != "") {
+            ttsManager.speak(currentLetter)
+        }
     }
 
     fun setIsNumbers(bool: Boolean) {
         isNumbers = bool
         reset()
+    }
+
+    fun rollTheDice() {
+        currentDice = Dice.entries.random()
     }
 }

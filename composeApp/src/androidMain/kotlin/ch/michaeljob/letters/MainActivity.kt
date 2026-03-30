@@ -21,8 +21,7 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            val ttsManager = remember { createTtsManager() }
-            App(ttsManager)
+            App()
         }
     }
 }
@@ -31,6 +30,5 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun AppAndroidPreview() {
     val context = LocalContext.current
-    val ttsManager = remember { AndroidTtsManager(context) }
-    App(ttsManager)
+    App()
 }
