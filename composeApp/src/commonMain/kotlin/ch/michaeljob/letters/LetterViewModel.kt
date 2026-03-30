@@ -71,6 +71,7 @@ class LetterViewModel : ViewModel() {
     fun onDiceSelected() {
         currentLetter = currentDice.value.toString()
         history.add(currentDice.value.toString())
+        ttsManager.speak(currentLetter)
         isSpinning = false
     }
 }

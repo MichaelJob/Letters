@@ -156,22 +156,21 @@ fun MainScreen(viewModel: LetterViewModel) {
                     modifier = Modifier.height(140.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    val letter = currentLetter
-                    if (letter != "" && !isSpinning) {
-                        Text(
-                            text = letter,
-                            style = MaterialTheme.typography.displayLarge.copy(
-                                fontWeight = FontWeight.ExtraBold,
-                                fontSize = 120.sp,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                        )
-                    } else {
+                    if (currentLetter == "" || isSpinning) {
                         Text(
                             text = if (remainingLetters.isEmpty()) "FIN" else "",
                             style = MaterialTheme.typography.headlineSmall.copy(
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.7f)
+                            )
+                        )
+                    } else {
+                        Text(
+                            text = currentLetter,
+                            style = MaterialTheme.typography.displayLarge.copy(
+                                fontWeight = FontWeight.ExtraBold,
+                                fontSize = 120.sp,
+                                color = MaterialTheme.colorScheme.primary
                             )
                         )
                     }
