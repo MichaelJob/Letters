@@ -33,33 +33,19 @@ import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
-
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import ch.michaeljob.letters.LetterViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(
-    viewModel: LetterViewModel = viewModel { LetterViewModel() },
-    onLetterSelected: (String) -> Unit = {}
-) {
+fun MainScreen(viewModel: LetterViewModel) {
     with(viewModel) {
-
-        // Announce letter when it's selected (and spinning stops)
-        LaunchedEffect(currentLetter, isWheelSpinning) {
-            if (currentLetter != "" && !isWheelSpinning) {
-                onLetterSelected(currentLetter)
-            }
-        }
-
         Scaffold(
             topBar = {
                 CenterAlignedTopAppBar(
@@ -129,8 +115,8 @@ fun MainScreen(
                 )
                 Spacer(modifier = Modifier.weight(0.1f))
 
-                if (isNumbers){
-                    Row (verticalAlignment = Alignment.CenterVertically){
+                if (isNumbers) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         Text("Dice")
                         Checkbox(
                             checked = isDice,
@@ -138,27 +124,28 @@ fun MainScreen(
                             enabled = viewModel.history.isEmpty(),
                         )
                     }
-                 }
+                }
                 Spacer(modifier = Modifier.weight(0.1f))
-                if (isDice && isNumbers){
+                if (isDice && isNumbers) {
                     DiceRoller(
-                        onDiceSelected = { viewModel.onDiceSelected(it) },
-                        isSpinning = isWheelSpinning,
-                        setSpinning = { viewModel.setSpinning(it) },
-                        currentDice = currentDice,
+                        currentDice = { viewModel.currentDice },
+                        onAnimationStart = { viewModel.rollTheDice() },
+                        onAnimationEnd = { viewModel.onDiceSelected() },
+                        isSpinning = isSpinning,
                     )
                 } else {
                     AlphabetWheel(
                         allLetters = if (viewModel.isNumbers) viewModel.allNumbers.value else viewModel.allLetters.value,
                         remainingLetters = remainingLetters,
-                        onLetterSelected = { viewModel.pickRandomLetter(it) },
-                        isSpinning = isWheelSpinning,
-                        setSpinning = { viewModel.setSpinning(it) }
+                        isSpinning = isSpinning,
+                        onAnimationStart = { viewModel.spinTheWheel() },
+                        onAnimationEnd = { viewModel.updateCurrentLetter() },
+                        currentLetter = { viewModel.currentLetter }
                     )
                 }
 
                 Text(
-                    text = if (!isWheelSpinning) "tap to spin" else "",
+                    text = if (isSpinning) "" else "tap to spin",
                     style = MaterialTheme.typography.labelMedium,
                     modifier = Modifier.padding(10.dp)
                 )
@@ -169,22 +156,21 @@ fun MainScreen(
                     modifier = Modifier.height(140.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    val letter = currentLetter
-                    if (letter != "" && !isWheelSpinning) {
-                        Text(
-                            text = letter,
-                            style = MaterialTheme.typography.displayLarge.copy(
-                                fontWeight = FontWeight.ExtraBold,
-                                fontSize = 120.sp,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                        )
-                    } else {
+                    if (currentLetter == "" || isSpinning) {
                         Text(
                             text = if (remainingLetters.isEmpty()) "FIN" else "",
                             style = MaterialTheme.typography.headlineSmall.copy(
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.7f)
+                            )
+                        )
+                    } else {
+                        Text(
+                            text = currentLetter,
+                            style = MaterialTheme.typography.displayLarge.copy(
+                                fontWeight = FontWeight.ExtraBold,
+                                fontSize = 120.sp,
+                                color = MaterialTheme.colorScheme.primary
                             )
                         )
                     }

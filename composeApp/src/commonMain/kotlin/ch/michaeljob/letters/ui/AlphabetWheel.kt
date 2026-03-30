@@ -33,12 +33,13 @@ import kotlin.math.sin
 
 @Composable
 fun AlphabetWheel(
+    currentLetter: () -> String,
     allLetters: List<String> = ('A'..'Z').map { it.toString() },
     remainingLetters: List<String>,
-    onLetterSelected: (String) -> Unit,
+    onAnimationStart: () -> Unit = {},
+    onAnimationEnd: () -> Unit = {},
+    modifier: Modifier = Modifier,
     isSpinning: Boolean,
-    setSpinning: (Boolean) -> Unit,
-    modifier: Modifier = Modifier
 ) {
     val rotation = remember { Animatable(0f) }
     val scope = rememberCoroutineScope()
@@ -51,28 +52,25 @@ fun AlphabetWheel(
             .size(300.dp)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
-                indication = null
+                indication = null,
+                enabled = !isSpinning && remainingLetters.isNotEmpty(),
             ) {
-                if (!isSpinning && remainingLetters.isNotEmpty()) {
-                    setSpinning(true)
-                    val targetLetter = remainingLetters.first()
-                    val targetIndex = allLetters.indexOf(targetLetter)
-                    
+                //onClick
+                scope.launch {
+                    onAnimationStart()
+                    val targetIndex = allLetters.indexOf(currentLetter())
                     val currentRotation = rotation.value
                     val extraSpins = 5
-                    val targetAngle = (extraSpins * 360f) - (targetIndex * anglePerLetter) - (currentRotation % 360f)
-                    
-                    scope.launch {
-                        rotation.animateTo(
-                            targetValue = currentRotation + targetAngle,
-                            animationSpec = tween(
-                                durationMillis = 3000,
-                                easing = LinearOutSlowInEasing
-                            )
+                    val targetAngle =
+                        (extraSpins * 360f) - (targetIndex * anglePerLetter) - (currentRotation % 360f)
+                    rotation.animateTo(
+                        targetValue = currentRotation + targetAngle,
+                        animationSpec = tween(
+                            durationMillis = 3000,
+                            easing = LinearOutSlowInEasing
                         )
-                        setSpinning(false)
-                        onLetterSelected(targetLetter)
-                    }
+                    )
+                    onAnimationEnd()
                 }
             },
         contentAlignment = Alignment.Center
@@ -80,7 +78,7 @@ fun AlphabetWheel(
         Canvas(modifier = Modifier.fillMaxSize()) {
             val center = Offset(size.width / 2, size.height / 2)
             val radius = size.minDimension / 2
-            
+
             drawCircle(
                 color = colorScheme.secondaryContainer,
                 radius = radius,
@@ -89,18 +87,34 @@ fun AlphabetWheel(
 
             rotate(rotation.value, pivot = center) {
 
-                drawRect(color = colorScheme.onSecondaryContainer, topLeft = center, size = Size(radius/3, radius/3))
-                drawRect(color = colorScheme.onPrimary, topLeft = Offset(center.x-radius/3,center.y), size = Size(radius/3, radius/3))
-                drawRect(color = colorScheme.onSecondaryContainer, topLeft = Offset(center.x-radius/3,center.y-radius/3), size = Size(radius/3, radius/3))
-                drawRect(color = colorScheme.onPrimary, topLeft = Offset(center.x,center.y-radius/3), size = Size(radius/3, radius/3))
+                drawRect(
+                    color = colorScheme.onSecondaryContainer,
+                    topLeft = center,
+                    size = Size(radius / 3, radius / 3)
+                )
+                drawRect(
+                    color = colorScheme.onPrimary,
+                    topLeft = Offset(center.x - radius / 3, center.y),
+                    size = Size(radius / 3, radius / 3)
+                )
+                drawRect(
+                    color = colorScheme.onSecondaryContainer,
+                    topLeft = Offset(center.x - radius / 3, center.y - radius / 3),
+                    size = Size(radius / 3, radius / 3)
+                )
+                drawRect(
+                    color = colorScheme.onPrimary,
+                    topLeft = Offset(center.x, center.y - radius / 3),
+                    size = Size(radius / 3, radius / 3)
+                )
 
                 allLetters.forEachIndexed { index, letter ->
                     val angle = index * anglePerLetter
                     val angleRad = (angle - 90.0) * (PI / 180.0)
-                    
+
                     val x = center.x + (radius * 0.8f) * cos(angleRad).toFloat()
                     val y = center.y + (radius * 0.8f) * sin(angleRad).toFloat()
-                    
+
                     rotate(degrees = angle, pivot = Offset(x, y)) {
                         val textLayoutResult = textMeasurer.measure(
                             text = letter,
@@ -115,7 +129,7 @@ fun AlphabetWheel(
                                 textAlign = TextAlign.Center
                             )
                         )
-                        
+
                         drawText(
                             textLayoutResult = textLayoutResult,
                             topLeft = Offset(
@@ -132,7 +146,7 @@ fun AlphabetWheel(
                 path = Path().apply {
                     moveTo(center.x, center.y - radius + 30)
                     lineTo(center.x - 20, center.y - radius)
-                    lineTo(center.x + 20 , center.y - radius)
+                    lineTo(center.x + 20, center.y - radius)
                 }
             )
         }
