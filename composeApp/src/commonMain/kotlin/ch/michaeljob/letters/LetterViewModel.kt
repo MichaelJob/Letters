@@ -21,6 +21,8 @@ class LetterViewModel : ViewModel() {
 
     var isSpinning by mutableStateOf(false)
 
+    var isMuted by mutableStateOf(false)
+
     var currentDice by mutableStateOf(Dice.entries.random())
 
     val ttsManager = createTtsManager()
@@ -55,9 +57,7 @@ class LetterViewModel : ViewModel() {
     //after animation
     fun updateCurrentLetter() {
         remainingLetters.remove(currentLetter)
-        history.add(currentLetter)
-        ttsManager.speak(currentLetter)
-        isSpinning = false
+        speakAfterSpinningUpdateHistory()
     }
 
 
@@ -70,8 +70,13 @@ class LetterViewModel : ViewModel() {
     //after animation
     fun onDiceSelected() {
         currentLetter = currentDice.value.toString()
-        history.add(currentDice.value.toString())
-        ttsManager.speak(currentLetter)
-        isSpinning = false
+        speakAfterSpinningUpdateHistory()
     }
+
+    private fun speakAfterSpinningUpdateHistory(){
+        isSpinning = false
+        history.add(currentLetter)
+        if (!isMuted) ttsManager.speak(currentLetter)
+    }
+
 }

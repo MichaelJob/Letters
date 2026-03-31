@@ -16,6 +16,8 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.VolumeMute
+import androidx.compose.material.icons.automirrored.outlined.VolumeOff
 import androidx.compose.material.icons.filled.Abc
 import androidx.compose.material.icons.filled.Numbers
 import androidx.compose.material.icons.outlined.Restore
@@ -49,6 +51,15 @@ fun MainScreen(viewModel: LetterViewModel) {
         Scaffold(
             topBar = {
                 CenterAlignedTopAppBar(
+                    navigationIcon = {
+                        IconButton(onClick = { viewModel.isMuted = !viewModel.isMuted }){
+                            Icon(
+                                imageVector = if (viewModel.isMuted) Icons.AutoMirrored.Outlined.VolumeOff else Icons.AutoMirrored.Outlined.VolumeMute,
+                                contentDescription = "mute / unmute",
+                                tint = MaterialTheme.colorScheme.tertiary,
+                            )
+                        }
+                                     },
                     title = {
                         Text(
                             if (viewModel.isNumbers) "Numbers" else "Letters",

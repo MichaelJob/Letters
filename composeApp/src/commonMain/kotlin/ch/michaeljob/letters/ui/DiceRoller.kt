@@ -15,9 +15,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.BlendMode
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import ch.michaeljob.letters.Dice
@@ -74,13 +71,14 @@ fun Cube(rotation: Animatable<Float, AnimationVector1D>, currentDice: Dice) {
 
     Box(modifier = Modifier.graphicsLayer { rotationZ = rotation.value }) {
         Image(
-            painterResource(currentDice.drawable),
+            painterResource(
+                if (dark) {
+                    currentDice.drawable_inv
+                } else {
+                    currentDice.drawable
+                }
+            ),
             contentDescription = currentDice.value.toString(),
-            colorFilter = if (dark) {
-                ColorFilter.tint(Color.White.copy(0.15F), BlendMode.SrcAtop)
-            } else {
-                null
-            }
         )
     }
 }
