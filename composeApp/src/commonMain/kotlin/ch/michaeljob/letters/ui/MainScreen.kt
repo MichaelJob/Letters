@@ -113,6 +113,8 @@ fun MainScreen(viewModel: LetterViewModel) {
                             Icon(
                                 imageVector = Icons.Filled.Numbers,
                                 contentDescription = "Numbers",
+                                tint = MaterialTheme.colorScheme.onPrimary,
+                                modifier = Modifier.size(16.dp)
                             )
                         }
                     } else {
@@ -120,6 +122,7 @@ fun MainScreen(viewModel: LetterViewModel) {
                             Icon(
                                 imageVector = Icons.Filled.Abc,
                                 contentDescription = "Letters",
+                                tint = MaterialTheme.colorScheme.onPrimary
                             )
                         }
                     }
