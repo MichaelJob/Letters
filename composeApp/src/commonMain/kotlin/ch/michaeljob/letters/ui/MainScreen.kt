@@ -62,7 +62,7 @@ fun MainScreen(viewModel: LetterViewModel) {
                                      },
                     title = {
                         Text(
-                            if (viewModel.isNumbers) "Numbers" else "Letters",
+                            if (viewModel.isNumbers) "123" else "ABC",
                             style = MaterialTheme.typography.headlineMedium.copy(
                                 fontWeight = FontWeight.Black,
                                 letterSpacing = 4.sp
